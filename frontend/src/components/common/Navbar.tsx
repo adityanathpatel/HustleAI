@@ -14,7 +14,8 @@ import {
   Megaphone,
   Mail,
   FolderKanban,
-  ExternalLink
+  ExternalLink,
+  BookOpen
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -23,9 +24,18 @@ import { useModel } from '../../context/ModelContext';
 interface NavbarProps {
   currentView: string;
   setCurrentView: (view: string) => void;
+  onOpenDocs?: () => void;
+  onOpenContact?: () => void;
+  onOpenAbout?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  currentView,
+  setCurrentView,
+  onOpenDocs,
+  onOpenContact,
+  onOpenAbout
+}) => {
   const { user, logout, openAuthModal } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { status, openConfigModal } = useModel();
@@ -57,11 +67,27 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
 
           {/* Navigation links */}
           {isLanding ? (
-            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
+            <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-slate-600 dark:text-slate-300">
               <a href="#features" className="hover:text-brand-600 dark:hover:text-white transition-colors">Features</a>
               <a href="#how-it-works" className="hover:text-brand-600 dark:hover:text-white transition-colors">How It Works</a>
               <a href="#open-ai" className="hover:text-brand-600 dark:hover:text-white transition-colors">Open AI & Privacy</a>
               <a href="#pricing" className="hover:text-brand-600 dark:hover:text-white transition-colors">Pricing</a>
+              {onOpenDocs && (
+                <button
+                  onClick={onOpenDocs}
+                  className="hover:text-brand-600 dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  Docs
+                </button>
+              )}
+              {onOpenContact && (
+                <button
+                  onClick={onOpenContact}
+                  className="hover:text-brand-600 dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  Contact
+                </button>
+              )}
             </nav>
           ) : (
             <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
@@ -168,6 +194,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
           </button>
+
+          {/* Docs / Guide Button */}
+          {onOpenDocs && (
+            <button
+              onClick={onOpenDocs}
+              title="Documentation & Guides"
+              aria-label="Documentation"
+              className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+            </button>
+          )}
 
           {/* Theme Toggle */}
           <button
