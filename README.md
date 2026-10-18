@@ -46,34 +46,34 @@ HustleAI is designed to be **simple, private, and reliable**. It separates creat
 
 ```mermaid
 flowchart TD
-    User(["👤 User / Browser"])
+    User["👤 User / Browser"]
     
-    subgraph UI["1. FRONTEND (React 19 + TypeScript + Tailwind)"]
+    subgraph S_UI["1. FRONTEND (React 19 + TypeScript + Tailwind)"]
         Tools["• Smart Listing Writer   • Invoice Studio<br/>• Receipt Organizer      • Marketing Copywriter<br/>• Business Email Writer  • Saved Projects"]
     end
 
-    subgraph API["2. BACKEND API (FastAPI + Python)"]
-        Gateway["API Gateway & Privacy Dispatcher<br/><i>Routes tasks & verifies secure session token</i>"]
+    subgraph S_API["2. BACKEND API (FastAPI + Python)"]
+        Gateway["API Gateway & Privacy Dispatcher<br/>Routes tasks & verifies secure session token"]
     end
 
-    subgraph Engines["3. SPECIALIZED ENGINES"]
-        direction LR
-        AI["🧠 AI Copywriter<br/><b>Local Ollama / Offline Rules</b><br/>Product listings, marketing, emails"]
-        Math["🧮 Invoice & PDF Engine<br/><b>Strict Math (Zero LLM Errors)</b><br/>Accurate taxes, totals & PDF export"]
-        OCR["🧾 Receipt Scanner<br/><b>OCR & Data Extractor</b><br/>Merchant, date & total amount parser"]
+    subgraph S_Engines["3. SPECIALIZED ENGINES"]
+        AI["🧠 AI Copywriter<br/>Local Ollama / Offline Rules<br/>Product listings, marketing, emails"]
+        Math["🧮 Invoice & PDF Engine<br/>Strict Math (Zero LLM Errors)<br/>Accurate taxes, totals & PDF export"]
+        OCR["🧾 Receipt Scanner<br/>OCR & Data Extractor<br/>Merchant, date & total parser"]
     end
 
-    subgraph Storage["4. PRIVATE LOCAL STORAGE"]
+    subgraph S_Storage["4. PRIVATE LOCAL STORAGE"]
         DB[("💾 Local SQLite Database<br/>Users, invoices & projects")]
         Files[("📁 Local Uploads Folder<br/>Receipt images & scans")]
     end
 
-    User <==> UI
-    UI <==>|Fast REST API (JWT)| Gateway
+    User --> Tools
+    Tools -->|Fast REST API / JWT| Gateway
     Gateway --> AI
     Gateway --> Math
     Gateway --> OCR
-    Gateway <==> Storage
+    Gateway --> DB
+    Gateway --> Files
 ```
 
 ```text
