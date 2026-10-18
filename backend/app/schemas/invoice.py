@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 from datetime import datetime
 
@@ -65,6 +65,8 @@ class InvoiceCalculationResponse(BaseModel):
 
 
 class InvoiceResponse(InvoiceBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     user_id: Optional[int] = None
     subtotal: float
@@ -73,5 +75,3 @@ class InvoiceResponse(InvoiceBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True

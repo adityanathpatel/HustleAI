@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 
@@ -15,6 +15,8 @@ class ReceiptUpdate(BaseModel):
 
 
 class ReceiptResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     original_filename: str
     file_size_bytes: int
@@ -31,6 +33,3 @@ class ReceiptResponse(BaseModel):
     raw_extracted_text: Optional[str] = None
     notes: Optional[str] = None
     created_at: datetime
-
-    class Config:
-        from_attributes = True

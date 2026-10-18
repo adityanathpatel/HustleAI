@@ -1,0 +1,57 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hustleai-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=HustleAI
+      - DEBUG=False
+      - DATABASE_URL=sqlite:///./hustleai.db
+      - JWT_SECRET=change_this_to_a_secure_random_key_in_production
+      - DEFAULT_AI_MODE=local
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - DEFAULT_LOCAL_MODEL=llama3.2:3b
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/hustleai.db:/app/hustleai.db
+    networks:
+      - hustleai-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hustleai-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - hustleai-net
+
+  # Optional local Ollama inference service
+  # Run with: docker compose --profile with-ollama up
+  ollama:
+    image: ollama/ollama:latest
+    container_name: hustleai-ollama
+    restart: unless-stopped
+    profiles:
+      - with-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    networks:
+      - hustleai-net
+
+networks:
+  hustleai-net:
+    driver: bridge
+
+volumes:
+  ollama-models:

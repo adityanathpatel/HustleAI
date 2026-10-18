@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -20,6 +20,8 @@ class ProjectUpdate(BaseModel):
 
 
 class ProjectResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     user_id: Optional[int] = None
     title: str
@@ -31,11 +33,10 @@ class ProjectResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
-
 
 class HistoryItemResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     tool_name: str
     prompt_summary: str
@@ -46,6 +47,3 @@ class HistoryItemResponse(BaseModel):
     latency_ms: float
     status: str
     created_at: datetime
-
-    class Config:
-        from_attributes = True

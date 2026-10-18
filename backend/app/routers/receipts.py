@@ -74,7 +74,7 @@ async def upload_receipt(
     db.commit()
     db.refresh(receipt)
 
-    resp = ReceiptResponse.from_orm(receipt)
+    resp = ReceiptResponse.model_validate(receipt)
     resp.uncertain_fields = parsed["uncertain_fields"]
     return resp
 
@@ -91,7 +91,7 @@ def list_receipts(
     
     results = []
     for r in receipts:
-        resp = ReceiptResponse.from_orm(r)
+        resp = ReceiptResponse.model_validate(r)
         # determine missing fields
         uncertain = []
         if not r.merchant or r.merchant == "Unspecified Merchant":
@@ -115,7 +115,7 @@ def get_receipt(
     if not receipt:
         raise HTTPException(status_code=404, detail="Receipt not found.")
     
-    resp = ReceiptResponse.from_orm(receipt)
+    resp = ReceiptResponse.model_validate(receipt)
     uncertain = []
     if not receipt.merchant or receipt.merchant == "Unspecified Merchant":
         uncertain.append("merchant")
@@ -161,7 +161,7 @@ def update_receipt(
     db.commit()
     db.refresh(receipt)
     
-    resp = ReceiptResponse.from_orm(receipt)
+    resp = ReceiptResponse.model_validate(receipt)
     resp.uncertain_fields = []
     return resp
 
