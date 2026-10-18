@@ -40,30 +40,82 @@ HustleAI automates high-frequency business operations — marketplace listing co
 
 ## 🏗️ System Architecture
 
+HustleAI utilizes a decoupled, privacy-first layered architecture designed for deterministic reliability, zero-leakage local execution, and optional high-performance cloud scale.
+
+```mermaid
+graph TB
+    subgraph Client["🖥️ 1. Presentation Layer (Vite + React 19 + TypeScript + Tailwind)"]
+        UI_Landing["Marketing Landing & Live Interactive Demo"]
+        UI_Dash["Operations Dashboard & Status Bar"]
+        subgraph Tools["Core Business Assistants"]
+            T_List["Smart Listing Writer"]
+            T_Inv["Invoice Studio & Tax Calculator"]
+            T_Rec["Receipt Organizer & OCR"]
+            T_Mkt["Marketing Copywriter (EN/HI)"]
+            T_Mail["Business Email & Quotations"]
+            T_Proj["Saved Projects & History"]
+        end
+        State_Ctx["Global State: ThemeContext | AuthContext | ModelContext | Notifications"]
+    end
+
+    Client ==>|REST API (Bearer JWT Auth)| Gateway
+
+    subgraph Backend["⚙️ 2. Backend Application Services (Python 3.11+ / FastAPI)"]
+        Gateway["FastAPI Gateway & Route Controllers<br/><code>/api/auth</code> • <code>/api/ai</code> • <code>/api/invoices</code> • <code>/api/receipts</code> • <code>/api/projects</code>"]
+        
+        subgraph Engines["3. Deterministic Processing Engines"]
+            E_Math["Financial Math Engine<br/><i>Exact subtotal, discount clamps, tax %</i>"]
+            E_PDF["Branded PDF Generator<br/><i>ReportLab dynamic vector document renderer</i>"]
+            E_OCR["Receipt OCR & Heuristic Extractor<br/><i>Pillow preprocessing + Layout regex parsing</i>"]
+        end
+
+        subgraph AI_Layer["4. AI Provider Abstraction Layer (ai_provider.py)"]
+            Router_AI{"Inference Dispatcher<br/>(Privacy Boundary Router)"}
+            Prov_Ollama["Ollama Provider<br/><b>Localhost:11434</b><br/>(Llama 3.2 3B / Mistral 7B / Phi-3)"]
+            Prov_Rule["Air-Gapped Rule Engine<br/><b>100% Offline Fallback</b><br/>(Zero latency, zero tokens)"]
+            Prov_Remote["OpenAI-Compatible Provider<br/><b>Strictly Opt-in Cloud</b><br/>(vLLM / OpenRouter / Private API)"]
+        end
+    end
+
+    subgraph Storage["💾 5. Data Sovereignty & Persistence Layer"]
+        DB[("Relational Database<br/>SQLite / PostgreSQL<br/>Users, Invoices, Receipts, Projects")]
+        Disk[("Local Storage<br/><code>/backend/uploads</code><br/>Receipt images & assets")]
+    end
+
+    Gateway --> Engines
+    Gateway --> Router_AI
+    Router_AI -->|Default Local Mode| Prov_Ollama
+    Router_AI -->|Offline / No GPU| Prov_Rule
+    Router_AI -->|Explicit User Opt-in| Prov_Remote
+
+    Gateway --> DB
+    E_OCR --> Disk
+    E_PDF -.->|Raw %PDF Stream| Client
+```
+
+### 🧩 Layer-by-Layer Architecture Breakdown
+
+| Layer | Technology | Primary Responsibilities |
+| :--- | :--- | :--- |
+| **1. Presentation Tier** | React 19, TypeScript, Tailwind CSS, Lucide Icons | Responsive single-page interface, real-time client-side draft state, zero-install interactive preview, dark/light theme switching, and local model status telemetry. |
+| **2. API Gateway & Security** | FastAPI, Pydantic v2, Python-Jose (JWT), Passlib (Argon2/Bcrypt) | Token-based authentication, request schema sanitization, CORS policy enforcement, structured error handling, and privacy boundary controls. |
+| **3. Deterministic Business Engines** | ReportLab 4.x, Pillow, Regex Heuristic Layout Parsers | **Zero-hallucination computation**: Exact currency calculations, tax computations, discount validation, and pixel-perfect vector PDF generation without LLM mathematical error. |
+| **4. AI Provider Abstraction** | Async HTTP Client, Modular Provider Strategy Pattern | Dynamic dispatching between local open-weight inference (Ollama), air-gapped zero-token deterministic rule engine, or user-configured remote OpenAI-compatible endpoints. |
+| **5. Persistence & Sovereignty** | SQLAlchemy ORM, SQLite (Embedded default) / PostgreSQL | Relational persistence of user credentials, invoice records, line items, OCR receipts, and project history strictly within the user's infrastructure boundary. |
+
+### 🔄 End-to-End Execution Flows
+
 ```text
-+---------------------------------------------------------------------------------+
-|                                Frontend (Vite + React 19 + TypeScript + Tailwind)        |
-|  - Landing Page with Interactive Product Preview                                |
-|  - Dashboard (Stats, Quick Actions, Model Status Bar)                           |
-|  - Tools: Listing Writer, Invoice Studio, Receipts OCR, Marketing, Emails       |
-|  - Local/Remote Privacy Switcher Modal & Toast Notifications                    |
-+---------------------------------------------------------------------------------+
-                                       |
-                                       | REST API (Bearer JWT Auth)
-                                       v
-+---------------------------------------------------------------------------------+
-|                               Backend (Python 3.11+ + FastAPI + Pydantic v2)    |
-|  - Routers: /api/auth, /api/ai, /api/invoices, /api/receipts, /api/projects     |
-|  - Deterministic Financial Math Engine (Subtotal, discounts, tax rates)         |
-|  - Branded PDF Generation Engine (ReportLab)                                    |
-|  - Receipt OCR & Heuristic Extractor (Pillow, Tesseract, Layout Regex)          |
-+---------------------------------------------------------------------------------+
-                    |                                        |
-     [Local Database (SQLite / Postgres)]     [AI Provider Abstraction Layer]
-     - Users & Profiles                       |-- OllamaProvider (Localhost:11434)
-     - Invoices & Line Items                  |-- LocalRuleEngine (Air-Gapped Fallback)
-     - Receipt Records & Uploads              \-- OpenAICompatibleProvider (Opt-in Remote)
-     - Saved Projects & History
+1. INVOICE WORKFLOW:
+   User Input -> Client Validation -> FastAPI (/api/invoices) -> Deterministic Math Engine -> ReportLab Vector PDF -> %PDF Byte Stream -> Client Download
+
+2. RECEIPT OCR WORKFLOW:
+   Receipt Upload -> Storage Clamping -> Image Preprocessing -> Layout Heuristic Regex -> Uncertainty Scoring -> DB Save -> Client Verification UI
+
+3. AI ASSISTANT WORKFLOW:
+   Tool Form Prompt -> Inference Dispatcher ->
+     ├── [Mode: Local]   ──> Ollama (Llama 3.2 3B) / Air-Gapped Engine ──> Output Sanitizer ──> Client Stream
+     └── [Mode: Remote]  ──> (User Opt-in Only) OpenAI-Compatible API  ──> Output Sanitizer ──> Client Stream
 ```
 
 ---
