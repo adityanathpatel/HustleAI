@@ -40,83 +40,102 @@ HustleAI automates high-frequency business operations — marketplace listing co
 
 ## 🏗️ System Architecture
 
-HustleAI utilizes a decoupled, privacy-first layered architecture designed for deterministic reliability, zero-leakage local execution, and optional high-performance cloud scale.
+HustleAI is designed to be **simple, private, and reliable**. It separates creative AI generation from strict financial math so you never have to worry about AI hallucinating numbers on your invoices or leaking private documents to the cloud.
+
+### 📐 High-Level Overview
 
 ```mermaid
-graph TB
-    subgraph Client["🖥️ 1. Presentation Layer (Vite + React 19 + TypeScript + Tailwind)"]
-        UI_Landing["Marketing Landing & Live Interactive Demo"]
-        UI_Dash["Operations Dashboard & Status Bar"]
-        subgraph Tools["Core Business Assistants"]
-            T_List["Smart Listing Writer"]
-            T_Inv["Invoice Studio & Tax Calculator"]
-            T_Rec["Receipt Organizer & OCR"]
-            T_Mkt["Marketing Copywriter (EN/HI)"]
-            T_Mail["Business Email & Quotations"]
-            T_Proj["Saved Projects & History"]
-        end
-        State_Ctx["Global State: ThemeContext | AuthContext | ModelContext | Notifications"]
+flowchart TD
+    User(["👤 User / Browser"])
+    
+    subgraph UI["1. FRONTEND (React 19 + TypeScript + Tailwind)"]
+        Tools["• Smart Listing Writer   • Invoice Studio<br/>• Receipt Organizer      • Marketing Copywriter<br/>• Business Email Writer  • Saved Projects"]
     end
 
-    Client ==>|REST API (Bearer JWT Auth)| Gateway
-
-    subgraph Backend["⚙️ 2. Backend Application Services (Python 3.11+ / FastAPI)"]
-        Gateway["FastAPI Gateway & Route Controllers<br/><code>/api/auth</code> • <code>/api/ai</code> • <code>/api/invoices</code> • <code>/api/receipts</code> • <code>/api/projects</code>"]
-        
-        subgraph Engines["3. Deterministic Processing Engines"]
-            E_Math["Financial Math Engine<br/><i>Exact subtotal, discount clamps, tax %</i>"]
-            E_PDF["Branded PDF Generator<br/><i>ReportLab dynamic vector document renderer</i>"]
-            E_OCR["Receipt OCR & Heuristic Extractor<br/><i>Pillow preprocessing + Layout regex parsing</i>"]
-        end
-
-        subgraph AI_Layer["4. AI Provider Abstraction Layer (ai_provider.py)"]
-            Router_AI{"Inference Dispatcher<br/>(Privacy Boundary Router)"}
-            Prov_Ollama["Ollama Provider<br/><b>Localhost:11434</b><br/>(Llama 3.2 3B / Mistral 7B / Phi-3)"]
-            Prov_Rule["Air-Gapped Rule Engine<br/><b>100% Offline Fallback</b><br/>(Zero latency, zero tokens)"]
-            Prov_Remote["OpenAI-Compatible Provider<br/><b>Strictly Opt-in Cloud</b><br/>(vLLM / OpenRouter / Private API)"]
-        end
+    subgraph API["2. BACKEND API (FastAPI + Python)"]
+        Gateway["API Gateway & Privacy Dispatcher<br/><i>Routes tasks & verifies secure session token</i>"]
     end
 
-    subgraph Storage["💾 5. Data Sovereignty & Persistence Layer"]
-        DB[("Relational Database<br/>SQLite / PostgreSQL<br/>Users, Invoices, Receipts, Projects")]
-        Disk[("Local Storage<br/><code>/backend/uploads</code><br/>Receipt images & assets")]
+    subgraph Engines["3. SPECIALIZED ENGINES"]
+        direction LR
+        AI["🧠 AI Copywriter<br/><b>Local Ollama / Offline Rules</b><br/>Product listings, marketing, emails"]
+        Math["🧮 Invoice & PDF Engine<br/><b>Strict Math (Zero LLM Errors)</b><br/>Accurate taxes, totals & PDF export"]
+        OCR["🧾 Receipt Scanner<br/><b>OCR & Data Extractor</b><br/>Merchant, date & total amount parser"]
     end
 
-    Gateway --> Engines
-    Gateway --> Router_AI
-    Router_AI -->|Default Local Mode| Prov_Ollama
-    Router_AI -->|Offline / No GPU| Prov_Rule
-    Router_AI -->|Explicit User Opt-in| Prov_Remote
+    subgraph Storage["4. PRIVATE LOCAL STORAGE"]
+        DB[("💾 Local SQLite Database<br/>Users, invoices & projects")]
+        Files[("📁 Local Uploads Folder<br/>Receipt images & scans")]
+    end
 
-    Gateway --> DB
-    E_OCR --> Disk
-    E_PDF -.->|Raw %PDF Stream| Client
+    User <==> UI
+    UI <==>|Fast REST API (JWT)| Gateway
+    Gateway --> AI
+    Gateway --> Math
+    Gateway --> OCR
+    Gateway <==> Storage
 ```
-
-### 🧩 Layer-by-Layer Architecture Breakdown
-
-| Layer | Technology | Primary Responsibilities |
-| :--- | :--- | :--- |
-| **1. Presentation Tier** | React 19, TypeScript, Tailwind CSS, Lucide Icons | Responsive single-page interface, real-time client-side draft state, zero-install interactive preview, dark/light theme switching, and local model status telemetry. |
-| **2. API Gateway & Security** | FastAPI, Pydantic v2, Python-Jose (JWT), Passlib (Argon2/Bcrypt) | Token-based authentication, request schema sanitization, CORS policy enforcement, structured error handling, and privacy boundary controls. |
-| **3. Deterministic Business Engines** | ReportLab 4.x, Pillow, Regex Heuristic Layout Parsers | **Zero-hallucination computation**: Exact currency calculations, tax computations, discount validation, and pixel-perfect vector PDF generation without LLM mathematical error. |
-| **4. AI Provider Abstraction** | Async HTTP Client, Modular Provider Strategy Pattern | Dynamic dispatching between local open-weight inference (Ollama), air-gapped zero-token deterministic rule engine, or user-configured remote OpenAI-compatible endpoints. |
-| **5. Persistence & Sovereignty** | SQLAlchemy ORM, SQLite (Embedded default) / PostgreSQL | Relational persistence of user credentials, invoice records, line items, OCR receipts, and project history strictly within the user's infrastructure boundary. |
-
-### 🔄 End-to-End Execution Flows
 
 ```text
-1. INVOICE WORKFLOW:
-   User Input -> Client Validation -> FastAPI (/api/invoices) -> Deterministic Math Engine -> ReportLab Vector PDF -> %PDF Byte Stream -> Client Download
-
-2. RECEIPT OCR WORKFLOW:
-   Receipt Upload -> Storage Clamping -> Image Preprocessing -> Layout Heuristic Regex -> Uncertainty Scoring -> DB Save -> Client Verification UI
-
-3. AI ASSISTANT WORKFLOW:
-   Tool Form Prompt -> Inference Dispatcher ->
-     ├── [Mode: Local]   ──> Ollama (Llama 3.2 3B) / Air-Gapped Engine ──> Output Sanitizer ──> Client Stream
-     └── [Mode: Remote]  ──> (User Opt-in Only) OpenAI-Compatible API  ──> Output Sanitizer ──> Client Stream
+┌────────────────────────────────────────────────────────────────────────┐
+│                      1. FRONTEND (Web Interface)                       │
+│  React 19 • Tailwind CSS • Smart Listing • Invoices • Receipts • Mail  │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │  Fast REST API (JWT)
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                     2. BACKEND (FastAPI Gateway)                       │
+│      Request Routing • Input Validation • Local / Remote Router        │
+└───────────────┬───────────────────┬────────────────────┬───────────────┘
+                │                   │                    │
+                ▼                   ▼                    ▼
+     ┌────────────────────┐ ┌───────────────┐ ┌────────────────────┐
+     │   3A. AI ENGINE    │ │ 3B. INVOICE   │ │  3C. RECEIPT OCR   │
+     │  Local Ollama or   │ │ Strict Math & │ │ Image Clean & Text │
+     │ Offline Fallback   │ │ PDF Exporter  │ │ Extraction Engine  │
+     └────────────────────┘ └───────────────┘ └────────────────────┘
+                │                   │                    │
+                └───────────┬───────┴────────────────────┘
+                            ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                  4. LOCAL STORAGE (100% On-Device)                     │
+│         SQLite Database (Records)  •  Local Folder (Receipts)          │
+└────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+### 🧩 The 4 Core Layers Explained
+
+1. **🖥️ Frontend (What You See & Use)**
+   - Built with **React 19**, **TypeScript**, and **Tailwind CSS**.
+   - Provides a clean, responsive workspace for all 5 business tools.
+   - Includes an instant interactive preview on the landing page, dark/light theme toggle, and a live status indicator showing whether your AI is running locally or remotely.
+
+2. **⚙️ Backend API Gateway (The Coordinator)**
+   - Built with **FastAPI** and **Python 3.11+**.
+   - Handles authentication securely with JWT tokens.
+   - Acts as a **privacy firewall**: ensures that prompts and customer data stay on your machine unless you explicitly turn on Remote Mode.
+
+3. **🛠️ Dedicated Processing Engines (The Workers)**
+   - **🧠 AI Generation Engine**: Generates marketplace titles, bullets, emails, and marketing copy. Uses local **Ollama** (`llama3.2:3b`) by default, with a built-in **air-gapped rule engine** so it works even without internet or GPU.
+   - **🧮 Invoice & PDF Engine**: Calculates subtotal, discounts, and taxes with **exact mathematical accuracy** (zero LLM guessing). Generates professional, branded PDF files instantly using ReportLab.
+   - **🧾 Receipt OCR Engine**: Preprocesses uploaded receipt images and automatically extracts the vendor name, transaction date, and total amount, flagging any low-confidence fields for quick review.
+
+4. **💾 Local Storage (Your Private Vault)**
+   - Uses an on-device **SQLite** database (or optional PostgreSQL) to store your saved invoices, projects, and history.
+   - Uploaded receipt photos stay in your local `backend/uploads` directory.
+   - **Zero telemetry**: your sales numbers and customer info never touch external servers.
+
+---
+
+### 🔄 How a Task Works (Example Flow)
+
+| Action | What Happens Under the Hood |
+| :--- | :--- |
+| **Creating an Invoice** | You enter line items $\rightarrow$ The **Math Engine** calculates subtotals, tax %, and discounts with 100% precision $\rightarrow$ The **PDF Engine** renders vector PDF bytes $\rightarrow$ Download starts instantly. |
+| **Scanning a Receipt** | You upload a photo $\rightarrow$ The **OCR Engine** crops and scans text $\rightarrow$ Key fields (Store, Date, Total) are extracted $\rightarrow$ You review and confirm $\rightarrow$ Saved to your local SQLite database. |
+| **Writing a Product Listing** | You type product bullet points $\rightarrow$ The **Inference Router** checks your privacy settings $\rightarrow$ Sends prompt to your local **Ollama / Llama 3.2** model $\rightarrow$ Returns formatted title, bullet points, and SEO tags. |
 
 ---
 
