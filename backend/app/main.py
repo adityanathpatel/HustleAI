@@ -43,9 +43,9 @@ def seed_sample_data_if_empty():
         user_count = db.query(User).count()
         if user_count == 0:
             demo_user = User(
-                email="alex@riveracrafts.com",
-                hashed_password=hash_password("Hustle2026!"),
-                full_name="Alex Rivera",
+                email="adityatemp@gmail.com",
+                hashed_password=hash_password("Aditya@112"),
+                full_name="Aditya Nath Patel",
                 business_name="Rivera Handcrafted Co.",
                 plan="pro"
             )
@@ -71,7 +71,7 @@ def seed_sample_data_if_empty():
                 issue_date="2026-10-15",
                 due_date="2026-10-30",
                 seller_name="Rivera Handcrafted Co.",
-                seller_email="alex@riveracrafts.com",
+                seller_email="adityatemp@gmail.com",
                 seller_phone="+1 (555) 349-2041",
                 seller_address="142 Maker Studio Way, Austin, TX 78701",
                 seller_tax_id="US-TX-998231",
