@@ -166,6 +166,28 @@ def seed_sample_data_if_empty():
             db.add(sample_hist)
 
             db.commit()
+        else:
+            # Ensure demo account is synced in existing databases
+            demo_user = db.query(User).filter(User.email == "adityatemp@gmail.com").first()
+            if not demo_user:
+                legacy = db.query(User).filter(User.email.in_(["alex@riveracrafts.com", "founder@hustleai.local"])).first()
+                if legacy:
+                    legacy.email = "adityatemp@gmail.com"
+                    legacy.full_name = "Aditya Nath Patel"
+                    legacy.hashed_password = hash_password("Aditya@112")
+                else:
+                    demo_user = User(
+                        email="adityatemp@gmail.com",
+                        hashed_password=hash_password("Aditya@112"),
+                        full_name="Aditya Nath Patel",
+                        business_name="Rivera Handcrafted Co.",
+                        plan="pro"
+                    )
+                    db.add(demo_user)
+            else:
+                demo_user.full_name = "Aditya Nath Patel"
+                demo_user.hashed_password = hash_password("Aditya@112")
+            db.commit()
     except Exception as e:
         db.rollback()
         print(f"Sample data initialization note: {e}")

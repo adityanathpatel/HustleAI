@@ -88,17 +88,29 @@ def get_me(user: User = Depends(require_user)):
 @router.post("/demo", response_model=Token)
 def demo_login(db: Session = Depends(get_db)):
     """Creates or logs into a ready-to-test Demo Founder account."""
-    demo_email = "founder@hustleai.local"
+    demo_email = "adityatemp@gmail.com"
     user = db.query(User).filter(User.email == demo_email).first()
     if not user:
-        user = User(
-            email=demo_email,
-            hashed_password=hash_password("DemoPassword123!"),
-            full_name="Alex Rivera",
-            business_name="Rivera Handcrafted Co.",
-            plan="pro"
-        )
-        db.add(user)
+        legacy_user = db.query(User).filter(User.email.in_(["founder@hustleai.local", "alex@riveracrafts.com"])).first()
+        if legacy_user:
+            legacy_user.email = demo_email
+            legacy_user.full_name = "Aditya Nath Patel"
+            legacy_user.hashed_password = hash_password("Aditya@112")
+            user = legacy_user
+        else:
+            user = User(
+                email=demo_email,
+                hashed_password=hash_password("Aditya@112"),
+                full_name="Aditya Nath Patel",
+                business_name="Rivera Handcrafted Co.",
+                plan="pro"
+            )
+            db.add(user)
+        db.commit()
+        db.refresh(user)
+    else:
+        user.full_name = "Aditya Nath Patel"
+        user.hashed_password = hash_password("Aditya@112")
         db.commit()
         db.refresh(user)
 
@@ -108,3 +120,4 @@ def demo_login(db: Session = Depends(get_db)):
         "token_type": "bearer",
         "user": user
     }
+

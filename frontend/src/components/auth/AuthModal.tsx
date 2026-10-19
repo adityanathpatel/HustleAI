@@ -54,7 +54,7 @@ export const AuthModal: React.FC = () => {
     setErrorMessage('');
     try {
       await demoLogin();
-      notify('Signed in as Demo Founder (Rivera Handcrafted Co.)', 'success');
+      notify('Signed in as Demo Founder (Aditya Nath Patel)', 'success');
     } catch (err: any) {
       setErrorMessage(err.message || 'Demo login failed');
     } finally {
@@ -97,21 +97,26 @@ export const AuthModal: React.FC = () => {
         </div>
 
         {/* Demo Fast Login Banner */}
-        <div className="p-3.5 rounded-xl bg-gradient-to-r from-brand-50 to-indigo-50 dark:from-brand-950/40 dark:to-indigo-950/40 border border-brand-200 dark:border-brand-800/60 flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-gradient-to-r from-brand-50 to-indigo-50 dark:from-brand-950/40 dark:to-indigo-950/40 border border-brand-200 dark:border-brand-800/60 flex items-center justify-between gap-3">
           <div>
             <span className="text-xs font-bold text-brand-900 dark:text-brand-300 flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-              1-Click Demo Account
+              1-Click Demo Account (Aditya Nath Patel)
             </span>
             <p className="text-[11px] text-brand-700 dark:text-brand-400 mt-0.5">
               Explore invoices, receipts & listings instantly.
             </p>
+            <div className="mt-1 flex items-center gap-1.5 text-[10px] font-mono text-brand-800/80 dark:text-brand-300/80">
+              <span className="bg-brand-100/70 dark:bg-brand-900/50 px-1.5 py-0.5 rounded">adityatemp@gmail.com</span>
+              <span>•</span>
+              <span className="bg-brand-100/70 dark:bg-brand-900/50 px-1.5 py-0.5 rounded">Aditya@112</span>
+            </div>
           </div>
           <button
             type="button"
             onClick={handleDemoSignIn}
             disabled={isSubmitting}
-            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-brand-600 hover:bg-brand-700 text-white shadow-sm transition-all flex items-center gap-1 disabled:opacity-50"
+            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-brand-600 hover:bg-brand-700 text-white shadow-sm transition-all flex items-center gap-1 disabled:opacity-50 shrink-0"
           >
             Try Demo
             <ArrowRight className="w-3 h-3" />
@@ -139,7 +144,7 @@ export const AuthModal: React.FC = () => {
                     required
                     value={fullName}
                     onChange={e => setFullName(e.target.value)}
-                    placeholder="Alex Rivera"
+                    placeholder="Aditya Nath Patel"
                     className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-navy-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
