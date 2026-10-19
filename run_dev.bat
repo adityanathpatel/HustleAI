@@ -5,7 +5,6 @@ echo       "Your AI. Your Business. Your Rules."
 echo ========================================================
 echo.
 
-
 echo [1/2] Starting FastAPI Backend on http://127.0.0.1:8000 ...
 start "HustleAI Backend" cmd /k "cd backend && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
 
