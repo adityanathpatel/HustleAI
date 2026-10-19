@@ -24,7 +24,7 @@
 If you discover a potential security vulnerability within HustleAI, please report it responsibly:
 
 1. **Do not create a public GitHub Issue** for security vulnerabilities.
-2. Email your findings directly to: **aditya.dhanus98@gmail.com**.
+2. Please report security vulnerabilities privately via [GitHub Security Advisories](https://github.com/adityanathpatel/HustleAI/security/advisories/new) or contact the project maintainers via GitHub private vulnerability reporting.
 3. Include:
    * A detailed description of the issue.
    * Reproduction steps or a Proof-of-Concept (PoC).
