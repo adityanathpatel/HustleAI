@@ -30,6 +30,7 @@ backend/hustleai.db
 backend/uploads/*
 !backend/uploads/.gitkeep
 
+
 # Environment variables
 .env
 .env.local
