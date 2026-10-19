@@ -82,7 +82,7 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
 
             <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">
-              "Your AI. Your Business. Your Rules." — The open-source AI platform empowering solo founders, freelancers, and small shopkeepers.
+              "Your AI. Your Business. Your Rules." — The open-source AI platform empowering solo founders, solo freelancers, and small shopkeepers.
             </p>
 
             {/* Creator Badge */}
