@@ -13,6 +13,7 @@ BACKEND_PID=$!
 
 sleep 2
 
+
 # Start frontend
 echo "[2/2] Starting Vite Frontend on http://127.0.0.1:5173 ..."
 (cd frontend && npm run dev) &
