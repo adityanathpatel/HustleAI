@@ -49,9 +49,11 @@ services:
     networks:
       - hustleai-net
 
+
 networks:
   hustleai-net:
     driver: bridge
+
 
 volumes:
   ollama-models:
