@@ -67,6 +67,7 @@ We use **Conventional Commits** for clear versioning and changelog tracking:
 
 ---
 
+
 ## 🔀 Submitting a Pull Request
 
 1. Fork the repository on GitHub.
