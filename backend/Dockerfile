@@ -8,6 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+
 # Install system dependencies (including tesseract for OCR)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
